@@ -1,0 +1,122 @@
+[
+  {
+    "expr": "(6*2)-5=7",
+    "key": true
+  },
+  {
+    "expr": "(8/2)+1=5",
+    "key": true
+  },
+  {
+    "expr": "3+4=9",
+    "key": false
+  },
+  {
+    "expr": "5-3=2",
+    "key": true
+  },
+  {
+    "expr": "2*3=7",
+    "key": false
+  },
+  {
+    "expr": "9-4=5",
+    "key": true
+  },
+  {
+    "expr": "7+5=11",
+    "key": false
+  },
+  {
+    "expr": "(3*3)+1=10",
+    "key": true
+  },
+  {
+    "expr": "(12/3)-2=3",
+    "key": true
+  },
+  {
+    "expr": "(5*2)+1=12",
+    "key": false
+  },
+  {
+    "expr": "(18/3)+2=8",
+    "key": true
+  },
+  {
+    "expr": "(4*4)-1=15",
+    "key": true
+  },
+  {
+    "expr": "(10/2)+6=10",
+    "key": true
+  },
+  {
+    "expr": "(7*2)-3=10",
+    "key": false
+  },
+  {
+    "expr": "(8+6)=15",
+    "key": false
+  },
+  {
+    "expr": "(14/2)=7",
+    "key": true
+  },
+  {
+    "expr": "(9+3)-5=8",
+    "key": true
+  },
+  {
+    "expr": "(16/4)+1=6",
+    "key": true
+  },
+  {
+    "expr": "(5*3)=14",
+    "key": false
+  },
+  {
+    "expr": "(2*7)-2=12",
+    "key": true
+  },
+  {
+    "expr": "(6+6)-1=13",
+    "key": true
+  },
+  {
+    "expr": "(15/5)+1=4",
+    "key": true
+  },
+  {
+    "expr": "(4*5)-3=18",
+    "key": true
+  },
+  {
+    "expr": "(9-2)=8",
+    "key": false
+  },
+  {
+    "expr": "(3*4)+2=14",
+    "key": true
+  },
+  {
+    "expr": "(12/4)+5=8",
+    "key": false
+  },
+  {
+    "expr": "(5+8)=12",
+    "key": false
+  },
+  {
+    "expr": "(7*3)-4=17",
+    "key": true
+  },
+  {
+    "expr": "(20/5)+2=7",
+    "key": true
+  },
+  {
+    "expr": "(6*3)-1=17",
+    "key": false
+  }
+]
