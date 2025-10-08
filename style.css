@@ -1,4 +1,4 @@
-/* Jasny, stonowany styl zbliżony do Qualtrics */
+/* AOSPAN — pionowy układ zoptymalizowany pod iframe Qualtrics */
 :root {
   --bg: #f7f7f7;
   --card: #ffffff;
@@ -7,63 +7,60 @@
   --accent: #3b7fc4;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html, body {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* usuwa paski poziome */
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: Inter, Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
 }
 
-/* --- Główne okno badania --- */
 #app {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 
   width: 100%;
-  max-width: 600px;        /* kluczowa zmiana – pionowy, smukły układ */
-  min-height: 75vh;
-  margin: 5vh auto;
+  max-width: 420px;       /* Węższe, pionowe okno */
+  margin: 4vh auto;
   background: var(--card);
   border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+  padding: 20px 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-h1, h2 {
-  margin: 0.4em 0;
+h2 {
+  font-size: 18px;
   text-align: center;
+  margin: 8px 0 10px;
 }
 
 p {
-  line-height: 1.5;
   text-align: center;
   font-size: 15px;
+  line-height: 1.4;
+  margin: 0;
 }
 
-/* --- Przyciski i działania --- */
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
 button {
   appearance: none;
   border: none;
   border-radius: 10px;
-  padding: 12px 20px;
+  padding: 10px 18px;
   font-size: 16px;
   background: var(--accent);
   color: #fff;
@@ -81,7 +78,6 @@ button:active {
   transform: translateY(1px);
 }
 
-/* --- Litery --- */
 .center {
   display: flex;
   align-items: center;
@@ -90,26 +86,27 @@ button:active {
 }
 
 .letter {
-  font-size: 96px;
+  font-size: 72px;
   font-weight: 800;
   letter-spacing: .04em;
 }
 
-/* --- Siatka liter (pionowy układ) --- */
+/* --- Siatka liter (2 kolumny po 6 elementów) --- */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
   width: 100%;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .grid button {
-  padding: 12px 0;
   font-size: 20px;
+  padding: 10px 0;
   border: 1px solid #e5e7eb;
   background: #fff;
   color: #111827;
+  border-radius: 8px;
 }
 
 /* --- Stopka --- */
@@ -120,44 +117,30 @@ footer {
   text-align: center;
 }
 
-/* --- Mobile (telefony) --- */
-@media (max-width: 640px) {
+/* --- Mobile --- */
+@media (max-width: 480px) {
   #app {
     max-width: 95%;
-    min-height: auto;
     margin: 2vh auto;
     border-radius: 0;
     box-shadow: none;
-    padding: 16px;
   }
 
   .letter {
-    font-size: 72px;
+    font-size: 64px;
   }
 
   .grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 
   .grid button {
     font-size: 18px;
-    padding: 10px 0;
+    padding: 8px 0;
   }
 
   p {
     font-size: 14px;
-  }
-}
-
-/* --- Tablet --- */
-@media (min-width: 641px) and (max-width: 1024px) {
-  #app {
-    max-width: 700px;
-    padding: 24px;
-  }
-
-  .letter {
-    font-size: 80px;
   }
 }
