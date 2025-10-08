@@ -4,7 +4,7 @@
 
 // === LOGGING ENDPOINT (Google Apps Script) ===
 // Paste your Web App URL here, e.g. "https://script.google.com/macros/s/AKfycbx.../exec"
-const LOG_ENDPOINT = "PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE";
+const LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycbxQBGs8cBPaTiYavfCtudpE3CHJP_Cry1Ct4NQCDlmwZ_pPF-90G_-Z6guolZ8Prqpw/exec";
 
 // === CONFIG (timings & structure) ===
 const CFG = {
