@@ -254,7 +254,7 @@ function finalizeAndSend(){
     fetch(LOG_ENDPOINT, { method:"POST", body: JSON.stringify(logData) }).catch(()=>{});
   }
   try{
-    window.parent.postMessage(JSON.stringify({type:"AOSPAN_RESULT", result: scores}), "*");
+    window.parent.postMessage(JSON.stringify({type:"AOSPAN_RESULT", result: scores}), "https://psychodpt.fra1.qualtrics.com/jfe/form/SV_3pZl63CyXEHveR0");
   }catch(e){}
   setTimeout(()=>{ try{ localStorage.removeItem("AOSPAN_LOG_FULL"); }catch(e){} }, 1500);
   screen(`<p>Dziękuję za wykonanie testu.<br> Kliknij strzałkę na dole strony, aby przejść dalej.</p>`);
