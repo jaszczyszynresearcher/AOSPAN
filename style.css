@@ -1,4 +1,4 @@
-/* AOSPAN — pionowy układ zoptymalizowany pod iframe Qualtrics */
+/* AOSPAN – pionowy, skrócony układ pod iframe Qualtrics */
 :root {
   --bg: #f7f7f7;
   --card: #ffffff;
@@ -20,6 +20,7 @@ html, body {
   font-family: Inter, Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
 }
 
+/* --- Główne okno badania --- */
 #app {
   display: flex;
   flex-direction: column;
@@ -27,18 +28,19 @@ html, body {
   align-items: center;
 
   width: 100%;
-  max-width: 420px;       /* Węższe, pionowe okno */
-  margin: 4vh auto;
+  max-width: 420px;         /* smukły, pionowy format */
+  margin: 2vh auto;         /* mniejsze odstępy góra/dół */
   background: var(--card);
   border-radius: 12px;
-  padding: 20px 16px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 16px 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
+/* --- Tekst i nagłówki --- */
 h2 {
   font-size: 18px;
   text-align: center;
-  margin: 8px 0 10px;
+  margin: 6px 0 8px;
 }
 
 p {
@@ -48,12 +50,13 @@ p {
   margin: 0;
 }
 
+/* --- Przyciski --- */
 .actions {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  margin-top: 14px;
+  margin-top: 10px;
 }
 
 button {
@@ -78,26 +81,27 @@ button:active {
   transform: translateY(1px);
 }
 
+/* --- Litera wyświetlana podczas zadania --- */
 .center {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 200px;
+  min-height: 160px; /* było 200px — skrócone */
 }
 
 .letter {
-  font-size: 72px;
+  font-size: 70px;
   font-weight: 800;
   letter-spacing: .04em;
 }
 
-/* --- Siatka liter (2 kolumny po 6 elementów) --- */
+/* --- Siatka liter (2 kolumny po 6) --- */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .grid button {
@@ -111,7 +115,7 @@ button:active {
 
 /* --- Stopka --- */
 footer {
-  margin-top: 12px;
+  margin-top: 8px;
   color: var(--muted);
   font-size: 12px;
   text-align: center;
@@ -121,18 +125,18 @@ footer {
 @media (max-width: 480px) {
   #app {
     max-width: 95%;
-    margin: 2vh auto;
+    margin: 1vh auto;
     border-radius: 0;
     box-shadow: none;
+    padding: 12px;
   }
 
   .letter {
-    font-size: 64px;
+    font-size: 60px;
   }
 
   .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 6px;
   }
 
   .grid button {
@@ -143,4 +147,5 @@ footer {
   p {
     font-size: 14px;
   }
-}
+
+  footer {
