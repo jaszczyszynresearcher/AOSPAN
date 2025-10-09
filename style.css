@@ -1,4 +1,4 @@
-/* === AOSPAN – zoptymalizowany układ pionowy dla Qualtrics (wersja mobilna) === */
+/* === AOSPAN – zoptymalizowany układ pionowy dla Qualtrics (wersja mobilna z powiększoną czcionką działań) === */
 :root {
   --bg: #f7f7f7;
   --card: #ffffff;
@@ -26,10 +26,9 @@ html, body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-
   width: 100%;
-  max-width: 420px;          /* pionowy, smukły układ */
-  height: 100vh;             /* pełna wysokość ekranu */
+  max-width: 420px;
+  height: 100vh;
   margin: 0 auto;
   background: var(--card);
   border-radius: 12px;
@@ -55,14 +54,15 @@ p {
 
 /* --- Działania matematyczne --- */
 .math-problem {
-  font-size: 28px;              /* większa czcionka */
-  font-weight: 600;
+  font-size: clamp(28px, 6vw, 36px);
+  font-weight: 700;
   text-align: center;
-  margin: 20px 0 12px;
-  word-wrap: normal;            /* nie łamie się na dwie linie */
-  white-space: nowrap;          /* wymusza jedną linię */
-  overflow: hidden;             /* nie rozjeżdża układu */
-  text-overflow: ellipsis;      /* jeśli ekran za wąski */
+  margin: 24px 0 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
 }
 
 /* --- Litera wyświetlana podczas zadania --- */
@@ -79,7 +79,7 @@ p {
   letter-spacing: .04em;
 }
 
-/* --- Siatka liter (2 kolumny po 6) --- */
+/* --- Siatka liter --- */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -97,7 +97,7 @@ p {
   border-radius: 8px;
 }
 
-/* --- Przyciski i akcje --- */
+/* --- Przyciski --- */
 .actions {
   display: flex;
   flex-direction: column;
@@ -151,7 +151,7 @@ footer {
   }
 
   .math-problem {
-    font-size: 24px;
+    font-size: clamp(26px, 7vw, 34px);
   }
 
   .letter {
