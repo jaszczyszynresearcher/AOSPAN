@@ -1,4 +1,4 @@
-/* AOSPAN – pionowy, skrócony układ pod iframe Qualtrics */
+/* === AOSPAN – zoptymalizowany układ pionowy dla Qualtrics (wersja mobilna) === */
 :root {
   --bg: #f7f7f7;
   --card: #ffffff;
@@ -14,7 +14,7 @@ html, body {
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: Inter, Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
@@ -28,12 +28,15 @@ html, body {
   align-items: center;
 
   width: 100%;
-  max-width: 420px;         /* smukły, pionowy format */
-  margin: 2vh auto;         /* mniejsze odstępy góra/dół */
+  max-width: 420px;          /* pionowy, smukły układ */
+  height: 100vh;             /* pełna wysokość ekranu */
+  margin: 0 auto;
   background: var(--card);
   border-radius: 12px;
   padding: 16px 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* --- Tekst i nagłówki --- */
@@ -50,7 +53,51 @@ p {
   margin: 0;
 }
 
-/* --- Przyciski --- */
+/* --- Działania matematyczne --- */
+.math-problem {
+  font-size: 28px;              /* większa czcionka */
+  font-weight: 600;
+  text-align: center;
+  margin: 20px 0 12px;
+  word-wrap: normal;            /* nie łamie się na dwie linie */
+  white-space: nowrap;          /* wymusza jedną linię */
+  overflow: hidden;             /* nie rozjeżdża układu */
+  text-overflow: ellipsis;      /* jeśli ekran za wąski */
+}
+
+/* --- Litera wyświetlana podczas zadania --- */
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+}
+
+.letter {
+  font-size: 70px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+/* --- Siatka liter (2 kolumny po 6) --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.grid button {
+  font-size: 20px;
+  padding: 10px 0;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #111827;
+  border-radius: 8px;
+}
+
+/* --- Przyciski i akcje --- */
 .actions {
   display: flex;
   flex-direction: column;
@@ -81,38 +128,6 @@ button:active {
   transform: translateY(1px);
 }
 
-/* --- Litera wyświetlana podczas zadania --- */
-.center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 160px; /* było 200px — skrócone */
-}
-
-.letter {
-  font-size: 70px;
-  font-weight: 800;
-  letter-spacing: .04em;
-}
-
-/* --- Siatka liter (2 kolumny po 6) --- */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  width: 100%;
-  margin-top: 8px;
-}
-
-.grid button {
-  font-size: 20px;
-  padding: 10px 0;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  color: #111827;
-  border-radius: 8px;
-}
-
 /* --- Stopka --- */
 footer {
   margin-top: 8px;
@@ -124,11 +139,19 @@ footer {
 /* --- Mobile --- */
 @media (max-width: 480px) {
   #app {
-    max-width: 95%;
-    margin: 1vh auto;
+    max-width: 100%;
+    margin: 0;
     border-radius: 0;
     box-shadow: none;
-    padding: 12px;
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 17px;
+  }
+
+  .math-problem {
+    font-size: 24px;
   }
 
   .letter {
@@ -147,5 +170,4 @@ footer {
   p {
     font-size: 14px;
   }
-
-  footer {
+}
