@@ -1,78 +1,141 @@
-/* AOSPAN — rollback do wersji bazowej (sprzed powiększeń) */
-
-* { box-sizing: border-box; }
+/* ======================================================
+   AOSPAN – styl mobilny i Qualtrics-responsive
+   Opracowanie: 2025, wersja zoptymalizowana do iframe
+   ====================================================== */
 
 html, body {
   margin: 0;
   padding: 0;
-  background: #ffffff;
-  color: #111;
-  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #fafafa;
+  font-family: "Inter", "Roboto", sans-serif;
+  color: #212121;
+  transform: scale(1.1);
+  transform-origin: top center;
+  overflow: hidden;
 }
 
-/* Główny obszar aplikacji renderowany przez app.js */
-#app {
-  max-width: 720px;     /* czytelna szerokość na mobile i w iframe */
-  margin: 0 auto;
-  padding: 16px;
-}
-
-/* Nagłówki/teksty startowe – klasyczny, lekki wygląd */
+/* --- Nagłówek instrukcji --- */
 h1, h2, h3 {
-  margin: 0 0 .6em;
-  font-weight: 700;
-  color: #111;
+  text-align: center;
+  color: #212121;
+  font-weight: 600;
+  margin: 0.5em 0;
   line-height: 1.2;
 }
 
-h2 {                  /* „Badanie AOSPAN” itp. */
-  font-size: clamp(20px, 4.8vw, 28px);
-  text-align: left;
+h2 {
+  font-size: clamp(20px, 5vw, 28px);
 }
 
-p, .instruction {
-  margin: 0 0 1em;
-  color: #222;
-  font-size: clamp(16px, 4vw, 20px);
-}
-
-/* DZIAŁANIE MATEMATYCZNE – rozmiar jak w starej wersji */
-#operation-text,
-.operation,
-.math-problem,
-.equation {
-  font-size: clamp(28px, 6vw, 36px);
-  font-weight: 600;
-  color: #000;
+/* --- Obszar działania matematycznego --- */
+#operation-container, .operation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  margin: .5em 0 1em;
-  line-height: 1.25;
+  padding: 1em;
+  width: 100%;
 }
 
-/* Przyciski (START / Prawda / Fałsz) – klasyczne, bez wymuszeń 100% szerokości */
-button {
-  display: block;
-  width: 260px;
-  max-width: 80%;
-  margin: 8px auto;
-  padding: 12px 16px;
-  font-size: 18px;
+#operation-text, .operation, .math-problem {
+  font-size: clamp(34px, 7.5vw, 44px);
   font-weight: 600;
-  border: 0;
-  border-radius: 10px;
-  background: #1e88e5;
-  color: #fff;
+  color: #000000;
+  line-height: 1.3;
+  margin-bottom: 1em;
+  letter-spacing: 0.5px;
+}
+
+/* --- Przyciski odpowiedzi --- */
+button, .btn, .answer-button {
+  width: 70%;
+  max-width: 320px;
+  margin: 0.5em auto;
+  padding: clamp(14px, 3vw, 18px);
+  font-size: clamp(20px, 5vw, 26px);
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  border-radius: 12px;
+  background-color: #2196f3;
+  color: #ffffff;
   cursor: pointer;
-  transition: filter .15s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
-button:hover { filter: brightness(0.95); }
-button:focus { outline: 2px solid #90caf9; outline-offset: 2px; }
+button:hover, .btn:hover, .answer-button:hover {
+  background-color: #1976d2;
+  transform: scale(1.03);
+}
 
-/* Stopka */
-footer {
-  margin-top: 16px;
+/* --- Alternatywne style dla przycisku "Fałsz" --- */
+button.false, .btn-false {
+  background-color: #e53935;
+}
+
+button.false:hover, .btn-false:hover {
+  background-color: #c62828;
+}
+
+/* --- Komunikaty tekstowe, np. "Rozwiąż działanie" --- */
+.instruction, .message {
+  font-size: clamp(20px, 4.5vw, 26px);
   text-align: center;
-  color: #666;
-  font-size: 14px;
+  margin: 0.5em 1em;
+  color: #333333;
+}
+
+/* --- Stopka informacyjna (AOSPAN • GitHub Pages) --- */
+footer, .footer {
+  position: relative;
+  bottom: 0;
+  text-align: center;
+  width: 100%;
+  font-size: clamp(12px, 3vw, 15px);
+  color: #777;
+  margin-top: 1em;
+}
+
+/* --- Dodatkowe zabezpieczenia iframe (Qualtrics) --- */
+@media (max-width: 480px) {
+  html, body {
+    transform: scale(1.12);
+    transform-origin: top center;
+  }
+
+  #operation-text, .operation, .math-problem {
+    font-size: clamp(36px, 8vw, 48px);
+  }
+
+  button, .btn, .answer-button {
+    width: 80%;
+    font-size: clamp(22px, 5.5vw, 28px);
+  }
+}
+
+/* --- Animacje lekkiego fade-in (komfort użytkownika) --- */
+.fade-in {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- Blok komunikatu po zakończeniu testu --- */
+#message-container {
+  text-align: center;
+  font-size: clamp(18px, 4vw, 22px);
+  color: #00695c;
+  font-weight: 600;
+  margin-top: 1em;
 }
