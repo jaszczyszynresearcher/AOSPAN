@@ -1,139 +1,121 @@
 /* =====================================================
-   AOSPAN – wersja stabilna mobilna (Qualtrics + GitHub)
-   Opracowanie: październik 2025, dla Andrzeja
+   AOSPAN – wersja końcowa (naprawa rozjazdu w Qualtrics)
    ===================================================== */
 
-/* --- Ogólne ustawienia strony --- */
+/* RESET iframe Qualtrics */
 html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  width: 100%;
-  font-family: "Inter", "Roboto", sans-serif;
-  color: #212121;
-  background-color: #ffffff;
-  overflow-x: hidden;
-  overflow-y: auto;
-  display: block;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  background-color: #ffffff !important;
+  font-family: "Inter", "Roboto", sans-serif !important;
+  color: #212121 !important;
+  -webkit-text-size-adjust: 100% !important;
 }
 
-/* --- Nagłówki i tekst instrukcji --- */
+/* Kontener główny */
+main, #app {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100vh !important;
+  text-align: center !important;
+  padding: 1em !important;
+  box-sizing: border-box !important;
+}
+
+/* Nagłówki i teksty */
 h1, h2, h3 {
-  text-align: center;
-  margin: 0.5em 0;
-  color: #212121;
-  font-weight: 600;
-  line-height: 1.2;
+  margin: 0.5em 0 !important;
+  font-weight: 700 !important;
+  color: #212121 !important;
+  line-height: 1.2 !important;
 }
 
 h2 {
-  font-size: clamp(22px, 5vw, 28px);
+  font-size: clamp(22px, 5vw, 30px) !important;
 }
 
 p, .instruction {
-  text-align: center;
-  font-size: clamp(16px, 4vw, 20px);
-  color: #333;
-  margin: 0.5em 1em;
+  font-size: clamp(16px, 4vw, 20px) !important;
+  line-height: 1.4 !important;
+  margin: 0.5em 0 1em 0 !important;
+  color: #333 !important;
 }
 
-/* --- Działanie matematyczne (kluczowy element) --- */
+/* Działanie matematyczne */
 #operation-text,
 .operation,
 .math-problem,
 .equation {
-  font-size: clamp(38px, 9vw, 58px);
-  font-weight: 700;
-  color: #000000;
-  text-align: center;
-  margin: 0.8em 0 1em 0;
-  line-height: 1.3;
+  font-size: clamp(40px, 9vw, 60px) !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+  line-height: 1.3 !important;
+  margin: 0.8em 0 1em 0 !important;
 }
 
-/* --- Przyciski odpowiedzi (Prawda / Fałsz) --- */
+/* Przyciski */
 button {
-  width: 80%;
-  max-width: 320px;
-  margin: 0.4em auto;
-  padding: 14px;
-  font-size: clamp(20px, 5vw, 26px);
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  background-color: #2196f3;
-  color: #ffffff;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  display: block;
+  display: block !important;
+  width: 80% !important;
+  max-width: 320px !important;
+  margin: 0.6em auto !important;
+  padding: 14px !important;
+  font-size: clamp(22px, 5.5vw, 28px) !important;
+  font-weight: 600 !important;
+  border: none !important;
+  border-radius: 12px !important;
+  background-color: #2196f3 !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease, transform 0.1s ease !important;
 }
 
 button:hover {
-  background-color: #1976d2;
-  transform: scale(1.03);
+  background-color: #1976d2 !important;
+  transform: scale(1.03) !important;
 }
 
-/* --- Styl dla przycisku START (ekran początkowy) --- */
-button.start {
-  background-color: #2196f3;
-  font-size: clamp(22px, 5.5vw, 28px);
-}
-
-button.start:hover {
-  background-color: #1976d2;
-}
-
-/* --- Stopka z podpisem --- */
+/* Stopka */
 footer {
-  text-align: center;
-  font-size: 14px;
-  color: #777;
-  margin-top: 1em;
-  padding-bottom: 0.5em;
+  text-align: center !important;
+  font-size: 14px !important;
+  color: #777 !important;
+  margin-top: 1em !important;
 }
 
-/* --- Komunikaty i teksty informacyjne --- */
-.message, .info, .feedback {
-  text-align: center;
-  font-size: clamp(18px, 4.5vw, 22px);
-  font-weight: 500;
-  color: #00695c;
-  margin-top: 1em;
-}
-
-/* --- Dostosowanie do mniejszych ekranów (smartfony) --- */
+/* Ulepszenie widoku mobilnego */
 @media (max-width: 480px) {
   #operation-text,
   .operation,
   .math-problem,
   .equation {
-    font-size: clamp(42px, 10vw, 64px);
+    font-size: clamp(44px, 10vw, 64px) !important;
   }
 
   button {
-    width: 85%;
-    font-size: clamp(22px, 5.5vw, 28px);
+    width: 85% !important;
+    font-size: clamp(24px, 6vw, 30px) !important;
   }
 
   p, .instruction {
-    font-size: clamp(16px, 4.5vw, 20px);
-  }
-
-  footer {
-    font-size: 13px;
+    font-size: clamp(16px, 4.5vw, 20px) !important;
   }
 }
 
-/* --- Animacja łagodnego wejścia elementów --- */
+/* Animacja fade-in */
 .fade-in {
-  animation: fadeIn 0.4s ease-in;
+  animation: fadeIn 0.4s ease-in !important;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-
-/* --- Zabezpieczenie przed pomniejszaniem w iframe --- */
-html {
-  -webkit-text-size-adjust: 100%;
 }
