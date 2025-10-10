@@ -131,27 +131,16 @@ footer {
   footer {
     font-size: 11px;
   }
-/* --- Większe działanie matematyczne (wersja mobilna) --- */
+/* --- Wymuszone powiększenie równania (pewne) --- */
 #operation-text,
 .operation,
 .math-problem,
 .equation {
-  font-size: clamp(36px, 9vw, 54px);
-  font-weight: 700;
-  color: #000000;
-  text-align: center;
-  line-height: 1.3;
-  letter-spacing: 0.5px;
+  font-size: clamp(38px, 9vw, 58px) !important;
+  font-weight: 700 !important;
+  color: #000 !important;
+  text-align: center !important;
+  line-height: 1.3 !important;
 }
-/* --- Wymuszenie poprawnego renderowania na mobile --- */
-@media (max-width: 480px) {
-  #operation-text,
-  .operation,
-  .math-problem,
-  .equation {
-    -webkit-text-size-adjust: none;
-    transform: scale(1.5);
-    transform-origin: center;
-  }
-}
+
 
