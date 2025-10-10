@@ -1,23 +1,23 @@
-/* ==============================================
-   AOSPAN – styl naprawiony (jasny + większa czcionka)
-   ============================================== */
+/* =====================================================
+   AOSPAN – wersja stabilna mobilna (Qualtrics + GitHub)
+   Opracowanie: październik 2025, dla Andrzeja
+   ===================================================== */
 
+/* --- Ogólne ustawienia strony --- */
 html, body {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   font-family: "Inter", "Roboto", sans-serif;
   color: #212121;
   background-color: #ffffff;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: block;
 }
 
-/* Nagłówki i teksty */
+/* --- Nagłówki i tekst instrukcji --- */
 h1, h2, h3 {
   text-align: center;
   margin: 0.5em 0;
@@ -37,20 +37,23 @@ p, .instruction {
   margin: 0.5em 1em;
 }
 
-/* Działanie matematyczne */
-#operation-text, .operation, .math-problem, .equation {
+/* --- Działanie matematyczne (kluczowy element) --- */
+#operation-text,
+.operation,
+.math-problem,
+.equation {
   font-size: clamp(38px, 9vw, 58px);
   font-weight: 700;
-  color: #000;
+  color: #000000;
   text-align: center;
   margin: 0.8em 0 1em 0;
   line-height: 1.3;
 }
 
-/* Przyciski */
+/* --- Przyciski odpowiedzi (Prawda / Fałsz) --- */
 button {
   width: 80%;
-  max-width: 300px;
+  max-width: 320px;
   margin: 0.4em auto;
   padding: 14px;
   font-size: clamp(20px, 5vw, 26px);
@@ -58,9 +61,10 @@ button {
   border: none;
   border-radius: 12px;
   background-color: #2196f3;
-  color: #fff;
+  color: #ffffff;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease;
+  display: block;
 }
 
 button:hover {
@@ -68,17 +72,40 @@ button:hover {
   transform: scale(1.03);
 }
 
-/* Stopka */
+/* --- Styl dla przycisku START (ekran początkowy) --- */
+button.start {
+  background-color: #2196f3;
+  font-size: clamp(22px, 5.5vw, 28px);
+}
+
+button.start:hover {
+  background-color: #1976d2;
+}
+
+/* --- Stopka z podpisem --- */
 footer {
   text-align: center;
   font-size: 14px;
   color: #777;
   margin-top: 1em;
+  padding-bottom: 0.5em;
 }
 
-/* Widok mobilny */
+/* --- Komunikaty i teksty informacyjne --- */
+.message, .info, .feedback {
+  text-align: center;
+  font-size: clamp(18px, 4.5vw, 22px);
+  font-weight: 500;
+  color: #00695c;
+  margin-top: 1em;
+}
+
+/* --- Dostosowanie do mniejszych ekranów (smartfony) --- */
 @media (max-width: 480px) {
-  #operation-text, .operation, .math-problem, .equation {
+  #operation-text,
+  .operation,
+  .math-problem,
+  .equation {
     font-size: clamp(42px, 10vw, 64px);
   }
 
@@ -90,4 +117,23 @@ footer {
   p, .instruction {
     font-size: clamp(16px, 4.5vw, 20px);
   }
+
+  footer {
+    font-size: 13px;
+  }
+}
+
+/* --- Animacja łagodnego wejścia elementów --- */
+.fade-in {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- Zabezpieczenie przed pomniejszaniem w iframe --- */
+html {
+  -webkit-text-size-adjust: 100%;
 }
