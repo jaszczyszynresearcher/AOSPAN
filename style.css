@@ -150,7 +150,7 @@ footer {
   .math-problem,
   .equation {
     -webkit-text-size-adjust: none;
-    transform: scale(1.05);
+    transform: scale(1.5);
     transform-origin: center;
   }
 }
