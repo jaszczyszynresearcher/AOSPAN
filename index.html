@@ -2,32 +2,12 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-
-  <!-- 🔹 Poprawka dla urządzeń mobilnych i iframe Qualtrics -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AOSPAN — Badanie</title>
-
-  <!-- 🔹 Upewnij się, że ładujemy właściwy styl -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- 🔹 Bezpieczne tło (gdyby iframe nadpisywał styl) -->
-  <style>
-    html, body {
-      background-color: #ffffff;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-    }
-  </style>
 </head>
-
 <body>
-  <!-- Główny kontener aplikacji -->
   <main id="app" aria-live="polite"></main>
-
-  <!-- Logika testu AOSPAN -->
   <script src="app.js"></script>
 </body>
 </html>
-
