@@ -6,9 +6,7 @@
   --muted: #6b7280;
   --accent: #3b7fc4;
 }
-
 * { box-sizing: border-box; }
-
 html, body {
   height: 100%;
   width: 100%;
@@ -19,7 +17,6 @@ html, body {
   color: var(--text);
   font-family: Inter, Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
 }
-
 /* --- Główne okno badania --- */
 #app {
   display: flex;
@@ -34,21 +31,18 @@ html, body {
   padding: 16px 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
-
 /* --- Tekst i nagłówki --- */
 h2 {
   font-size: 18px;
   text-align: center;
   margin: 6px 0 8px;
 }
-
 p {
   text-align: center;
   font-size: 15px;
   line-height: 1.4;
   margin: 0;
 }
-
 /* --- Przyciski --- */
 .actions {
   display: flex;
@@ -57,7 +51,6 @@ p {
   width: 100%;
   margin-top: 10px;
 }
-
 button {
   appearance: none;
   border: none;
@@ -70,16 +63,13 @@ button {
   transition: transform .05s ease, filter .15s ease;
   width: 100%;
 }
-
 button.secondary {
   background: #e5e7eb;
   color: #111827;
 }
-
 button:active {
   transform: translateY(1px);
 }
-
 /* --- Litera wyświetlana podczas zadania --- */
 .center {
   display: flex;
@@ -87,13 +77,11 @@ button:active {
   justify-content: center;
   min-height: 160px;
 }
-
 .letter {
   font-size: 70px;
   font-weight: 800;
   letter-spacing: .04em;
 }
-
 /* --- Siatka liter (2 kolumny po 6 elementów) --- */
 .grid {
   display: grid;
@@ -102,7 +90,6 @@ button:active {
   width: 100%;
   margin-top: 8px;
 }
-
 .grid button {
   font-size: 20px;
   padding: 10px 0;
@@ -111,7 +98,6 @@ button:active {
   color: #111827;
   border-radius: 8px;
 }
-
 /* --- Stopka --- */
 footer {
   margin-top: 8px;
@@ -119,7 +105,6 @@ footer {
   font-size: 12px;
   text-align: center;
 }
-
 /* --- Mobile --- */
 @media (max-width: 480px) {
   #app {
@@ -129,26 +114,33 @@ footer {
     box-shadow: none;
     padding: 12px;
   }
-
   .letter {
     font-size: 60px;
   }
-
   .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
   }
-
   .grid button {
     font-size: 18px;
     padding: 8px 0;
   }
-
   p {
     font-size: 14px;
   }
-
   footer {
     font-size: 11px;
   }
+  /* --- Większa czcionka dla działania matematycznego --- */
+#operation-text,
+.operation,
+.math-problem,
+.equation {
+  font-size: clamp(32px, 7vw, 46px);
+  font-weight: 700;
+  color: #000;
+  text-align: center;
+  margin: 0.5em 0 1em;
+  line-height: 1.3;
 }
+
