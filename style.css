@@ -136,7 +136,7 @@ footer {
 .operation,
 .math-problem,
 .equation {
-  font-size: clamp(32px, 7vw, 46px);
+  font-size: clamp(36px, 8vw, 54px);
   font-weight: 700;
   color: #000;
   text-align: center;
