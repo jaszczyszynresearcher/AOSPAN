@@ -327,4 +327,30 @@ __mo__.observe(document.documentElement, { childList: true, subtree: true, attri
 
 // 🔹 Dodatkowy pomiar co 1,5 sekundy (na wypadek animacji / timerów)
 setInterval(postHeight, 1500);
+const QUALTRICS_ORIGIN = "https://psychodpt.fra1.qualtrics.com";
+
+(function noScroll(){
+  const st = document.createElement('style');
+  st.textContent = `html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:auto!important}
+                    .fade{overflow:visible!important}`;
+  document.head.appendChild(st);
+})();
+
+function getDocHeight(){
+  const b=document.body,d=document.documentElement;
+  return Math.ceil(Math.max(b.scrollHeight,d.scrollHeight,b.offsetHeight,d.offsetHeight));
+}
+function postHeight(){
+  try{ window.parent.postMessage({type:"IFRAME_RESIZE",height:getDocHeight()}, QUALTRICS_ORIGIN);}catch(e){}
+}
+window.addEventListener("message", ev=>{
+  if(ev.origin!==QUALTRICS_ORIGIN) return;
+  if(ev.data&&ev.data.type==="PING_HEIGHT") postHeight();
+});
+document.addEventListener("DOMContentLoaded", postHeight);
+window.addEventListener("load", postHeight);
+window.addEventListener("resize", ()=>setTimeout(postHeight,50));
+new MutationObserver(()=>{ clearTimeout(window.__tick); window.__tick=setTimeout(postHeight,30); })
+  .observe(document.documentElement,{childList:true,subtree:true,attributes:true});
+
 
