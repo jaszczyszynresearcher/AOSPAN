@@ -2,18 +2,15 @@
 // GitHub Pages + Qualtrics parent postMessage + Google Sheets logging
 // IMPORTANT: Replace LOG_ENDPOINT below with your own Google Apps Script Web App URL.
 
-// === LOGGING ENDPOINT (Google Apps Script) ===
-// Paste your Web App URL here, e.g. "https://script.google.com/macros/s/AKfycbx.../exec"
 const LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycbxQBGs8cBPaTiYavfCtudpE3CHJP_Cry1Ct4NQCDlmwZ_pPF-90G_-Z6guolZ8Prqpw/exec";
 
-// === CONFIG (timings & structure) ===
 const CFG = {
   letterMs: 800,
   postLetterBlankMs: 200,
   interSeriesBreakMs: 1500,
   calibMinMs: 3000,
   calibMaxMs: 6000,
-  mathTrainTrials: 15,         // recommended: 15-20
+  mathTrainTrials: 15,
   mixedTrainSeries: 3,
   mixedTrainSetSize: 2,
   mainSetSizes: [3,4,5,6,7],
@@ -21,23 +18,21 @@ const CFG = {
   lettersPool: ["F","H","J","K","L","N","P","Q","R","S","T","Y"]
 };
 
-// === GLOBAL STATE ===
 let letters = [...CFG.lettersPool];
-let mathPool = [];              // loaded from data/math_pool.json
-let processLimitMs = 4500;      // set after math training (mean + 2.5 SD, clamped)
+let mathPool = [];
+let processLimitMs = 4500;
 let state = { phase: "START" };
 
-// Logging containers
 const logData = {
   participant_id: `anon_${new Date().toISOString().replace(/[:.]/g,'-')}`,
   timestamp: new Date().toISOString(),
   process_limit_ms: null,
-  math_trials: [],              // {expr, key, resp, correct, rt_ms, timeout, context}
-  series_logs: [],              // {context, set_size, presented[], recalled[], correct_positions}
+  math_trials: [],
+  series_logs: [],
   scores: null
 };
 
-// Utility: shuffle, sample, clamp
+// Utility
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function sample(arr, n){ const cp=[...arr]; shuffle(cp); return cp.slice(0,n); }
 const clamp = (x,min,max)=>Math.max(min,Math.min(max,x));
@@ -60,7 +55,7 @@ function showStart(){
 
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
-// LETTER-ONLY training (2 sequences: sizes 3 & 5)
+// LETTER-ONLY training
 async function startLetterTraining(){
   state.phase = "LETTER_TRAIN";
   const sizes = [3,5];
@@ -74,7 +69,7 @@ async function startLetterTraining(){
 async function runLetterOnlySequence(n){
   const seq = sample(letters, n);
   for (const L of seq){
-    screen(`<div class="center"><div class="letter" aria-label="Litera">${L}</div></div>`);
+    screen(`<div class="center"><div class="letter">${L}</div></div>`);
     await sleep(CFG.letterMs);
     screen(`<div class="center"><div class="badge">...</div></div>`);
     await sleep(CFG.postLetterBlankMs);
@@ -89,13 +84,13 @@ async function runLetterOnlySequence(n){
   });
 }
 
-// MATH-ONLY training (determine processLimitMs)
+// MATH training
 async function startMathTraining(){
   state.phase = "MATH_TRAIN";
   const trials = sample(mathPool, CFG.mathTrainTrials);
   const rts = [];
   for (const t of trials){
-    const res = await presentMathTrial(t, /*useLimit*/ false);
+    const res = await presentMathTrial(t, false);
     logData.math_trials.push({ ...res, context:"math_only" });
     if (res.correct && res.rt_ms!=null && res.rt_ms>=200) rts.push(res.rt_ms);
     await sleep(250);
@@ -105,14 +100,14 @@ async function startMathTraining(){
     const sd = Math.sqrt(rts.map(x=>(x-mean)**2).reduce((a,b)=>a+b,0)/rts.length);
     processLimitMs = clamp(Math.round(mean + 2.5*sd), CFG.calibMinMs, CFG.calibMaxMs);
   } else {
-    processLimitMs = 5000; // fallback
+    processLimitMs = 5000;
   }
   logData.process_limit_ms = processLimitMs;
   screen(`<h2>Ustalono limit czasu</h2><p>Przechodzimy do krótkiego treningu zadania z literami.</p><p class="mono badge">Limit: ${processLimitMs} ms</p>`);
   setTimeout(startMixedTraining, 1200);
 }
 
-// PRESENT one math trial
+// Present math trial
 function presentMathTrial(t, useLimit=true){
   return new Promise(async (resolve)=>{
     state.phase = "MATH";
@@ -129,23 +124,20 @@ function presentMathTrial(t, useLimit=true){
     }
 
     screen(`<h2>Rozwiąż działanie</h2>
-      <p class="mono" aria-label="Działanie">${t.expr}</p>
+      <p class="mono">${t.expr}</p>
       <div class="actions">
-        ${btn("Prawda",`onclick='__mathAnswer(true)'`)}
-        ${btn("Fałsz",`onclick='__mathAnswer(false)'`)}
+        ${btn("Prawda","onclick='__mathAnswer(true)'")}
+        ${btn("Fałsz","onclick='__mathAnswer(false)'")}
       </div>`);
 
-    // expose handler
     window.__mathAnswer = (ans)=> finish({key: !!ans, time: performance.now(), timedOut:false});
-
-    // optional timeout
     if (useLimit){
       timeoutId = setTimeout(()=>finish({key:null, time: performance.now(), timedOut:true}), processLimitMs);
     }
   });
 }
 
-// MIXED practice (3 sequences of size 2)
+// Mixed practice
 async function startMixedTraining(){
   state.phase = "MIXED_TRAIN";
   for (let i=0;i<CFG.mixedTrainSeries;i++){
@@ -155,7 +147,7 @@ async function startMixedTraining(){
   setTimeout(startMainTest, 1200);
 }
 
-// MAIN TEST
+// Main test
 async function startMainTest(){
   state.phase = "MAIN";
   const plan = [];
@@ -171,7 +163,7 @@ async function startMainTest(){
   finalizeAndSend();
 }
 
-// RUN one series (n items: math -> letter -> blank, then recall)
+// One series
 async function runSeries(n, context){
   const seqLetters = sample(letters, n);
   for (let i=0;i<n;i++){
@@ -188,7 +180,7 @@ async function runSeries(n, context){
   logData.series_logs.push({context, set_size:n, presented:seqLetters, recalled, correct_positions:correctPositions});
 }
 
-// Recall UI (grid 4x3, click to build response, with back/clear/confirm)
+// Recall UI
 function recallScreen(target){
   return new Promise((resolve)=>{
     state.phase = "RECALL";
@@ -222,11 +214,11 @@ function recallScreen(target){
   });
 }
 
-// Compute PCU and other scores
+// Compute scores
 function computeScores(){
   const totalPositions = logData.series_logs.filter(s=>s.context==="main").reduce((a,s)=>a+s.set_size,0);
   const totalCorrect = logData.series_logs.filter(s=>s.context==="main").reduce((a,s)=>a+s.correct_positions,0);
-  const partialCreditScore = totalCorrect; // PCU (0..75)
+  const partialCreditScore = totalCorrect;
   const mathMain = logData.math_trials.filter(t=>t.context==="main");
   const correctMain = mathMain.filter(t=>t.correct===true).length;
   const validRTs = mathMain.filter(t=>t.correct && t.rt_ms!=null).map(t=>t.rt_ms);
@@ -244,7 +236,7 @@ function computeScores(){
   };
 }
 
-// Finalize, send to Qualtrics and Google Sheets
+// Finalize + send
 function finalizeAndSend(){
   state.phase = "END";
   const scores = computeScores();
@@ -284,55 +276,16 @@ async function boot(){
 }
 window.addEventListener("load", boot);
 
-/* ===== [PATCH] AUTO-RESIZE do Qualtrics (rodzic) ===== */
-/* Dostosowuje wysokość iframa AOSPAN w Qualtrics, aby nie zostawało puste pole */
-const QUALTRICS_ORIGIN = "https://psychodpt.fra1.qualtrics.com"; // zmień jeśli inny region
 
-function getDocHeight() {
-  const b = document.body;
-  const d = document.documentElement;
-  return Math.ceil(Math.max(
-    b.scrollHeight, d.scrollHeight,
-    b.offsetHeight, d.offsetHeight,
-    b.clientHeight, d.clientHeight
-  ));
-}
-
-function postHeight() {
-  try {
-    const h = getDocHeight();
-    window.parent.postMessage({ type: "IFRAME_RESIZE", height: h }, QUALTRICS_ORIGIN);
-  } catch (e) {}
-}
-
-// 🔹 Odbiór sygnału z Qualtrics (PING_HEIGHT)
-window.addEventListener("message", function (event) {
-  if (event.origin !== QUALTRICS_ORIGIN) return;
-  if (event.data && event.data.type === "PING_HEIGHT") {
-    postHeight();
-  }
-});
-
-// 🔹 Automatyczne pomiary wysokości
-document.addEventListener("DOMContentLoaded", postHeight);
-window.addEventListener("load", postHeight);
-window.addEventListener("resize", () => setTimeout(postHeight, 50));
-
-// 🔹 Obserwuj zmiany w DOM (ekrany zmieniają się dynamicznie)
-const __mo__ = new MutationObserver(() => {
-  clearTimeout(window.__postHeightTick);
-  window.__postHeightTick = setTimeout(postHeight, 30);
-});
-__mo__.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
-
-// 🔹 Dodatkowy pomiar co 1,5 sekundy (na wypadek animacji / timerów)
-setInterval(postHeight, 1500);
-const QUALTRICS_ORIGIN = "https://psychodpt.fra1.qualtrics.com";
+/* ===== [PATCH] AUTO-RESIZE do Qualtrics (brak scrolla, brak dziury) ===== */
+const QUALTRICS_ORIGIN = "https://psychodpt.fra1.qualtrics.com"; // Twoja domena Qualtrics
 
 (function noScroll(){
   const st = document.createElement('style');
-  st.textContent = `html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:auto!important}
-                    .fade{overflow:visible!important}`;
+  st.textContent = `
+    html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:auto!important}
+    .fade{overflow:visible!important}
+  `;
   document.head.appendChild(st);
 })();
 
@@ -341,16 +294,17 @@ function getDocHeight(){
   return Math.ceil(Math.max(b.scrollHeight,d.scrollHeight,b.offsetHeight,d.offsetHeight));
 }
 function postHeight(){
-  try{ window.parent.postMessage({type:"IFRAME_RESIZE",height:getDocHeight()}, QUALTRICS_ORIGIN);}catch(e){}
+  try{
+    window.parent.postMessage({ type:"IFRAME_RESIZE", height:getDocHeight() }, QUALTRICS_ORIGIN);
+  }catch(e){}
 }
-window.addEventListener("message", ev=>{
+window.addEventListener("message",ev=>{
   if(ev.origin!==QUALTRICS_ORIGIN) return;
-  if(ev.data&&ev.data.type==="PING_HEIGHT") postHeight();
+  if(ev.data && ev.data.type==="PING_HEIGHT") postHeight();
 });
-document.addEventListener("DOMContentLoaded", postHeight);
-window.addEventListener("load", postHeight);
-window.addEventListener("resize", ()=>setTimeout(postHeight,50));
+document.addEventListener("DOMContentLoaded",postHeight);
+window.addEventListener("load",postHeight);
+window.addEventListener("resize",()=>setTimeout(postHeight,50));
 new MutationObserver(()=>{ clearTimeout(window.__tick); window.__tick=setTimeout(postHeight,30); })
   .observe(document.documentElement,{childList:true,subtree:true,attributes:true});
-
-
+setInterval(postHeight,1500);
