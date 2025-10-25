@@ -1,4 +1,4 @@
-// AOSPAN FULL — PL implementation with Qualtrics auto-resize (no footer, no scroll)
+// === AOSPAN — PL implementation for Qualtrics (dynamic auto-resize, no footer, no scroll) ===
 
 const LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycbxQBGs8cBPaTiYavfCtudpE3CHJP_Cry1Ct4NQCDlmwZ_pPF-90G_-Z6guolZ8Prqpw/exec";
 
@@ -30,33 +30,31 @@ const logData = {
   scores: null
 };
 
-// ==== Helpers ===============================================================
-
+// === Helpers ===
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-function sample(arr,n){ const cp=[...arr]; shuffle(cp); return cp.slice(0,n); }
+function sample(arr, n){ const cp=[...arr]; shuffle(cp); return cp.slice(0,n); }
 const clamp = (x,min,max)=>Math.max(min,Math.min(max,x));
 
 const app = ()=>document.getElementById("app");
 
-// --- renderowanie bez stopki (poprawna wersja) ---
+// bez stopki (czysta wersja)
 function screen(html){
   const root = app();
-  if(!root) return;
+  if (!root) return;
   root.innerHTML = "";
   const wrapper = document.createElement("div");
   wrapper.className = "fade";
   wrapper.innerHTML = html;
   root.appendChild(wrapper);
-  if(typeof postHeight==="function"){ setTimeout(postHeight,0); }
+  if (typeof __postHeight === "function") setTimeout(__postHeight, 0);
 }
 
-// ==== Zadanie ==============================================================
-
+// === Start ===
 function showStart(){
   state.phase = "START";
   screen(`
     <h2>Badanie AOSPAN</h2>
-    <p>Aby rozpocząć, kliknij START. Podczas badania rozwiązujesz działania arytmetyczne (prawda/fałsz) i zapamiętujesz litery. 
+    <p>Aby rozpocząć badanie, kliknij START. Podczas badania będziesz rozwiązywać działania arytmetyczne (prawda/fałsz) i zapamiętywać litery. 
     Ekrany przechodzą automatycznie.</p>
     <div class="actions">
       <button onclick="startLetterTraining()" aria-label="Rozpocznij badanie">START</button>
@@ -66,17 +64,17 @@ function showStart(){
 
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
-// --- letter only ---
+// === Letter-only training ===
 async function startLetterTraining(){
-  state.phase="LETTER_TRAIN";
-  for(const n of [3,5]) await runLetterOnlySequence(n);
+  state.phase = "LETTER_TRAIN";
+  for (const n of [3,5]) await runLetterOnlySequence(n);
   screen(`<h2>Trening liter zakończony</h2><p>Za chwilę trening działań arytmetycznych.</p>`);
-  setTimeout(startMathTraining,1200);
+  setTimeout(startMathTraining, 1200);
 }
 
 async function runLetterOnlySequence(n){
-  const seq = sample(letters,n);
-  for(const L of seq){
+  const seq = sample(letters, n);
+  for (const L of seq){
     screen(`<div class="center"><div class="letter">${L}</div></div>`);
     await sleep(CFG.letterMs);
     screen(`<div class="center"><div class="badge">...</div></div>`);
@@ -84,45 +82,49 @@ async function runLetterOnlySequence(n){
   }
   const recalled = await recallScreen(seq);
   logData.series_logs.push({
-    context:"letter_practice",
-    set_size:n,
-    presented:seq,
+    context: "letter_practice",
+    set_size: n,
+    presented: seq,
     recalled,
-    correct_positions: recalled.reduce((a,ch,i)=>a+(ch===seq[i]?1:0),0)
+    correct_positions: recalled.reduce((acc, ch, i)=>acc + (ch===seq[i]?1:0), 0)
   });
 }
 
-// --- math training ---
+// === Math-only training ===
 async function startMathTraining(){
-  state.phase="MATH_TRAIN";
-  const trials = sample(mathPool,CFG.mathTrainTrials);
-  const rts=[];
-  for(const t of trials){
-    const res = await presentMathTrial(t,false);
-    logData.math_trials.push({...res,context:"math_only"});
-    if(res.correct&&res.rt_ms!=null&&res.rt_ms>=200) rts.push(res.rt_ms);
+  state.phase = "MATH_TRAIN";
+  const trials = sample(mathPool, CFG.mathTrainTrials);
+  const rts = [];
+  for (const t of trials){
+    const res = await presentMathTrial(t, false);
+    logData.math_trials.push({ ...res, context:"math_only" });
+    if (res.correct && res.rt_ms!=null && res.rt_ms>=200) rts.push(res.rt_ms);
     await sleep(250);
   }
-  if(rts.length>=3){
-    const mean=rts.reduce((a,b)=>a+b,0)/rts.length;
-    const sd=Math.sqrt(rts.map(x=>(x-mean)**2).reduce((a,b)=>a+b,0)/rts.length);
-    processLimitMs = clamp(Math.round(mean+2.5*sd),CFG.calibMinMs,CFG.calibMaxMs);
-  } else processLimitMs=5000;
-  logData.process_limit_ms=processLimitMs;
+  if (rts.length >= 3){
+    const mean = rts.reduce((a,b)=>a+b,0)/rts.length;
+    const sd = Math.sqrt(rts.map(x=>(x-mean)**2).reduce((a,b)=>a+b,0)/rts.length);
+    processLimitMs = clamp(Math.round(mean + 2.5*sd), CFG.calibMinMs, CFG.calibMaxMs);
+  } else {
+    processLimitMs = 5000;
+  }
+  logData.process_limit_ms = processLimitMs;
   screen(`<h2>Ustalono limit czasu</h2><p>Rozpoczyna się trening z literami.</p><p class="mono badge">Limit: ${processLimitMs} ms</p>`);
-  setTimeout(startMixedTraining,1200);
+  setTimeout(startMixedTraining, 1200);
 }
 
-// --- math trial ---
-function presentMathTrial(t,useLimit=true){
+// === Math trial ===
+function presentMathTrial(t, useLimit=true){
   return new Promise(async resolve=>{
-    state.phase="MATH";
-    const start=performance.now(); let finished=false,timeoutId=null;
+    state.phase = "MATH";
+    const start = performance.now();
+    let finished = false, timeoutId = null;
     function finish(resp){
-      if(finished) return; finished=true;
+      if(finished) return;
+      finished = true;
       if(timeoutId) clearTimeout(timeoutId);
-      const rt=resp.time-start;
-      const correct=t.key===resp.key;
+      const rt = resp.time - start;
+      const correct = t.key === resp.key;
       resolve({expr:t.expr,key:t.key,resp:resp.key,correct,rt_ms:resp.timedOut?null:Math.round(rt),timeout:resp.timedOut===true});
     }
     screen(`<h2>Rozwiąż działanie</h2>
@@ -136,7 +138,7 @@ function presentMathTrial(t,useLimit=true){
   });
 }
 
-// --- mixed training ---
+// === Mixed training ===
 async function startMixedTraining(){
   state.phase="MIXED_TRAIN";
   for(let i=0;i<CFG.mixedTrainSeries;i++) await runSeries(CFG.mixedTrainSetSize,"mixed_practice");
@@ -144,7 +146,7 @@ async function startMixedTraining(){
   setTimeout(startMainTest,1200);
 }
 
-// --- main test ---
+// === Main test ===
 async function startMainTest(){
   state.phase="MAIN";
   const plan=[];
@@ -158,7 +160,7 @@ async function startMainTest(){
   finalizeAndSend();
 }
 
-// --- one series ---
+// === Run one series ===
 async function runSeries(n,context){
   const seqLetters=sample(letters,n);
   for(let i=0;i<n;i++){
@@ -175,7 +177,7 @@ async function runSeries(n,context){
   logData.series_logs.push({context,set_size:n,presented:seqLetters,recalled,correct_positions:correctPositions});
 }
 
-// --- recall screen ---
+// === Recall screen ===
 function recallScreen(target){
   return new Promise(resolve=>{
     state.phase="RECALL";
@@ -205,7 +207,7 @@ function recallScreen(target){
   });
 }
 
-// --- compute scores ---
+// === Compute scores ===
 function computeScores(){
   const totalPositions=logData.series_logs.filter(s=>s.context==="main").reduce((a,s)=>a+s.set_size,0);
   const totalCorrect=logData.series_logs.filter(s=>s.context==="main").reduce((a,s)=>a+s.correct_positions,0);
@@ -227,7 +229,7 @@ function computeScores(){
   };
 }
 
-// --- finalize & send ---
+// === Finalize and send ===
 function finalizeAndSend(){
   state.phase="END";
   const scores=computeScores();
@@ -237,14 +239,13 @@ function finalizeAndSend(){
     fetch(LOG_ENDPOINT,{method:"POST",body:JSON.stringify(logData)}).catch(()=>{});
   }
   try{
-    window.parent.postMessage(JSON.stringify({type:"AOSPAN_RESULT",result:scores}),
-      "https://psychodpt.fra1.qualtrics.com");
+    window.parent.postMessage(JSON.stringify({type:"AOSPAN_RESULT",result:scores}), "*");
   }catch(e){}
   setTimeout(()=>{try{localStorage.removeItem("AOSPAN_LOG_FULL");}catch(e){}},1500);
   screen(`<p>Dziękuję za wykonanie testu.<br>Kliknij strzałkę na dole strony, aby przejść dalej.</p>`);
 }
 
-// --- boot ---
+// === Boot ===
 async function boot(){
   try{
     const [lettersResp,mathResp]=await Promise.all([
@@ -269,31 +270,40 @@ async function boot(){
 window.addEventListener("load",boot);
 
 
-// ==== AUTO-RESIZE patch =====================================================
-
-const QUALTRICS_ORIGIN = "https://psychodpt.fra1.qualtrics.com";
+// === AUTO-RESIZE dynamic patch (brak scrolla, dowolny origin Qualtrics) ===
+let __parentOrigin = null;
 
 (function noScroll(){
-  const st=document.createElement("style");
-  st.textContent=`html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:auto!important}
-                  .fade{overflow:visible!important}`;
+  const st = document.createElement("style");
+  st.textContent = `
+    html,body{margin:0!important;padding:0!important;overflow:hidden!important;height:auto!important}
+    .fade{overflow:visible!important}
+  `;
   document.head.appendChild(st);
 })();
 
-function getDocHeight(){
+function __getDocHeight(){
   const b=document.body,d=document.documentElement;
   return Math.ceil(Math.max(b.scrollHeight,d.scrollHeight,b.offsetHeight,d.offsetHeight));
 }
-function postHeight(){
-  try{ window.parent.postMessage({type:"IFRAME_RESIZE",height:getDocHeight()},QUALTRICS_ORIGIN);}catch(e){}
+function __postHeight(){
+  try{
+    const h = __getDocHeight();
+    const tgt = __parentOrigin || "*";
+    window.parent.postMessage({ type:"IFRAME_RESIZE", height:h }, tgt);
+  }catch(e){}
 }
 window.addEventListener("message",ev=>{
-  if(ev.origin!==QUALTRICS_ORIGIN)return;
-  if(ev.data&&ev.data.type==="PING_HEIGHT")postHeight();
+  if(ev.data && ev.data.type==="PING_HEIGHT"){
+    __parentOrigin = ev.origin;
+    __postHeight();
+  }
 });
-document.addEventListener("DOMContentLoaded",postHeight);
-window.addEventListener("load",postHeight);
-window.addEventListener("resize",()=>setTimeout(postHeight,50));
-new MutationObserver(()=>{clearTimeout(window.__tick);window.__tick=setTimeout(postHeight,30);})
-  .observe(document.documentElement,{childList:true,subtree:true,attributes:true});
-setInterval(postHeight,1500);
+document.addEventListener("DOMContentLoaded",__postHeight);
+window.addEventListener("load",__postHeight);
+window.addEventListener("resize",()=>setTimeout(__postHeight,50));
+new MutationObserver(()=>{
+  clearTimeout(window.__tickAOS);
+  window.__tickAOS=setTimeout(__postHeight,30);
+}).observe(document.documentElement,{childList:true,subtree:true,attributes:true});
+setInterval(__postHeight,1500);
