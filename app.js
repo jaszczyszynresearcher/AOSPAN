@@ -270,8 +270,11 @@ async function boot(){
 window.addEventListener("load",boot);
 
 
-// === AUTO-RESIZE dynamic patch (brak scrolla, dowolny origin Qualtrics) ===
+// === AUTO-RESIZE (stabilny): dynamiczny origin + debounce + próg zmian ===
 let __parentOrigin = null;
+let __lastSent = 0;
+const __EPS = 2;        // nie wysyłaj zmian mniejszych niż 2 px
+let __sendTimer = null;
 
 (function noScroll(){
   const st = document.createElement("style");
@@ -286,24 +289,38 @@ function __getDocHeight(){
   const b=document.body,d=document.documentElement;
   return Math.ceil(Math.max(b.scrollHeight,d.scrollHeight,b.offsetHeight,d.offsetHeight));
 }
-function __postHeight(){
+
+function __postHeightNow(){
   try{
     const h = __getDocHeight();
+    if (Math.abs(h - __lastSent) <= __EPS) return;  // ignoruj „szum”
     const tgt = __parentOrigin || "*";
     window.parent.postMessage({ type:"IFRAME_RESIZE", height:h }, tgt);
+    __lastSent = h;
   }catch(e){}
 }
-window.addEventListener("message",ev=>{
-  if(ev.data && ev.data.type==="PING_HEIGHT"){
+
+function __postHeightDebounced(delay=50){
+  clearTimeout(__sendTimer);
+  __sendTimer = setTimeout(__postHeightNow, delay);
+}
+
+// Po PING zapamiętaj prawdziwy origin rodzica i odeślij wysokość
+window.addEventListener("message", ev=>{
+  if (ev.data && ev.data.type === "PING_HEIGHT") {
     __parentOrigin = ev.origin;
-    __postHeight();
+    __postHeightNow();          // wyślij od razu
   }
 });
-document.addEventListener("DOMContentLoaded",__postHeight);
-window.addEventListener("load",__postHeight);
-window.addEventListener("resize",()=>setTimeout(__postHeight,50));
-new MutationObserver(()=>{
-  clearTimeout(window.__tickAOS);
-  window.__tickAOS=setTimeout(__postHeight,30);
-}).observe(document.documentElement,{childList:true,subtree:true,attributes:true});
-setInterval(__postHeight,1500);
+
+// Pierwsze pomiary i reagowanie na zmiany
+document.addEventListener("DOMContentLoaded", ()=>__postHeightDebounced(0));
+window.addEventListener("load", ()=>__postHeightDebounced(0));
+window.addEventListener("resize", ()=>__postHeightDebounced(80));
+
+// Obserwuj zmiany DOM – z bezpiecznym debounce
+new MutationObserver(()=>__postHeightDebounced(80))
+  .observe(document.documentElement, { childList:true, subtree:true, attributes:true });
+
+// „watchdog” rzadko – tylko gdyby coś umknęło
+setInterval(__postHeightNow, 3000);
