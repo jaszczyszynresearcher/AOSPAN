@@ -283,3 +283,48 @@ async function boot(){
   showStart();
 }
 window.addEventListener("load", boot);
+
+/* ===== [PATCH] AUTO-RESIZE do Qualtrics (rodzic) ===== */
+/* Dostosowuje wysokość iframa AOSPAN w Qualtrics, aby nie zostawało puste pole */
+const QUALTRICS_ORIGIN = "https://psychodpt.fra1.qualtrics.com"; // zmień jeśli inny region
+
+function getDocHeight() {
+  const b = document.body;
+  const d = document.documentElement;
+  return Math.ceil(Math.max(
+    b.scrollHeight, d.scrollHeight,
+    b.offsetHeight, d.offsetHeight,
+    b.clientHeight, d.clientHeight
+  ));
+}
+
+function postHeight() {
+  try {
+    const h = getDocHeight();
+    window.parent.postMessage({ type: "IFRAME_RESIZE", height: h }, QUALTRICS_ORIGIN);
+  } catch (e) {}
+}
+
+// 🔹 Odbiór sygnału z Qualtrics (PING_HEIGHT)
+window.addEventListener("message", function (event) {
+  if (event.origin !== QUALTRICS_ORIGIN) return;
+  if (event.data && event.data.type === "PING_HEIGHT") {
+    postHeight();
+  }
+});
+
+// 🔹 Automatyczne pomiary wysokości
+document.addEventListener("DOMContentLoaded", postHeight);
+window.addEventListener("load", postHeight);
+window.addEventListener("resize", () => setTimeout(postHeight, 50));
+
+// 🔹 Obserwuj zmiany w DOM (ekrany zmieniają się dynamicznie)
+const __mo__ = new MutationObserver(() => {
+  clearTimeout(window.__postHeightTick);
+  window.__postHeightTick = setTimeout(postHeight, 30);
+});
+__mo__.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
+
+// 🔹 Dodatkowy pomiar co 1,5 sekundy (na wypadek animacji / timerów)
+setInterval(postHeight, 1500);
+
