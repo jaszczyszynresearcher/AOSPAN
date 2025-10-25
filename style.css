@@ -132,3 +132,10 @@ footer {
     font-size: 11px;
   }
 }
+/* === Patch pod Qualtrics: brak scrolla + brak dolnej „dziury” === */
+html, body { overflow: hidden !important; height: auto !important; }
+#app { margin-top: 8px !important; margin-bottom: 0 !important; }
+@media (max-width: 480px) {
+  #app { max-width: 100% !important; border-radius: 0; box-shadow: none; }
+}
+
