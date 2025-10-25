@@ -39,7 +39,6 @@ const clamp = (x,min,max)=>Math.max(min,Math.min(max,x));
 
 // Render helpers
 const app = ()=>document.getElementById("app");
-function screen(html){ app().innerHTML = `<div class="fade">${html}</div><footer>AOSPAN • PL • GitHub Pages</footer>`; }
 function btn(label, attrs=""){ return `<button ${attrs}>${label}</button>`; }
 
 // START screen
